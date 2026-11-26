@@ -12,3 +12,6 @@ MTR-04 (Pintura) | 61.0 C | 11.5 A | 1.8 mm/s | 1780
 ***
 Sempre temos que interpretar os dados para não cometer erros, como diz Platão:
 >Uma boa decisão é baseada no conhecimento e não em números **- Platão**
+
+# index.html e style.css
+Agora o código tem sua versão em html e o style.css apoia o html

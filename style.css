@@ -1,0 +1,352 @@
+:root {
+  --bg-body: #0f172a;
+  --bg-card: #1e293b;
+  --bg-subcard: #0f172a;
+  --border-color: #334155;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+
+  --cor-normal: #10b981;
+  --cor-normal-bg: rgba(16, 185, 129, 0.14);
+
+  --cor-atencao: #f59e0b;
+  --cor-atencao-bg: rgba(245, 158, 11, 0.14);
+
+  --cor-critico: #ef4444;
+  --cor-critico-bg: rgba(239, 68, 68, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  line-height: 1.5;
+  padding: 24px;
+}
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+/* Cabeçalho */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+
+.header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.subtitulo {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-top: 2px;
+}
+
+.header-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.badge-versao {
+  background-color: #334155;
+  color: #e2e8f0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.data-hora {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Barra de Limites */
+.limites-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: center;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  font-size: 0.86rem;
+  color: var(--text-muted);
+}
+
+.limites-bar b {
+  color: var(--text-main);
+}
+
+/* Estatísticas */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stat-label {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+
+.stat-value {
+  font-size: 1.55rem;
+  font-weight: 700;
+}
+
+.destaque-quente {
+  color: var(--cor-critico);
+}
+
+/* Layout Principal */
+.main-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.card-section {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.card-section h2 {
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Cards dos Motores */
+.motores-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.motor-card {
+  background-color: var(--bg-subcard);
+  border: 1px solid var(--border-color);
+  border-left-width: 5px;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.borda-normal { border-left-color: var(--cor-normal); }
+.borda-atencao { border-left-color: var(--cor-atencao); }
+.borda-critico { border-left-color: var(--cor-critico); }
+
+.motor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.motor-id {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-right: 10px;
+}
+
+.motor-setor {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.status-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 999px;
+  letter-spacing: 0.5px;
+}
+
+.badge-normal {
+  background-color: var(--cor-normal-bg);
+  color: var(--cor-normal);
+  border: 1px solid var(--cor-normal);
+}
+
+.badge-atencao {
+  background-color: var(--cor-atencao-bg);
+  color: var(--cor-atencao);
+  border: 1px solid var(--cor-atencao);
+}
+
+.badge-critico {
+  background-color: var(--cor-critico-bg);
+  color: var(--cor-critico);
+  border: 1px solid var(--cor-critico);
+}
+
+/* Métricas de cada motor */
+.metricas-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.metrica {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.metrica span {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+.metrica strong {
+  font-size: 1rem;
+  margin-top: 2px;
+}
+
+.valor-alerta {
+  border-color: var(--cor-critico);
+  background-color: var(--cor-critico-bg);
+}
+
+.valor-alerta strong {
+  color: #fca5a5;
+}
+
+/* Alertas */
+.alertas-lista {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.alertas-lista li {
+  font-size: 0.86rem;
+  color: #fca5a5;
+  background-color: rgba(239, 68, 68, 0.1);
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+.sem-alertas {
+  font-size: 0.85rem;
+  color: var(--cor-normal);
+}
+
+/* Plano de Manutenção */
+.plano-manutencao {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.plano-grupo {
+  background-color: var(--bg-subcard);
+  border: 1px solid var(--border-color);
+  border-top-width: 4px;
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.grupo-critico { border-top-color: var(--cor-critico); }
+.grupo-atencao { border-top-color: var(--cor-atencao); }
+.grupo-normal { border-top-color: var(--cor-normal); }
+
+.plano-grupo h3 {
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.plano-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-motor {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.tag-motor small {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.vazio {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Responsividade */
+@media (max-width: 900px) {
+  .main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header-meta {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 560px) {
+  .metricas-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

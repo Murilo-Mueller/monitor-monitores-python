@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitoramento de Motores Industriais</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Cabeçalho do Sistema -->
+    <header class="header">
+      <div>
+        <h1 id="sistema-titulo">Monitoramento de Motores Industriais</h1>
+        <p class="subtitulo">Painel de Telemetria e Manutenção Preventiva</p>
+      </div>
+      <div class="header-meta">
+        <span class="badge-versao" id="sistema-versao">v1.0.0</span>
+        <span class="data-hora" id="data-hora"></span>
+      </div>
+    </header>
+
+    <!-- Barra de Limites Operacionais -->
+    <section class="limites-bar" id="limites-bar"></section>
+
+    <!-- Cards de Resumo / Estatísticas -->
+    <section class="stats-grid" id="stats-grid"></section>
+
+    <!-- Painel Principal: Motores + Plano de Manutenção -->
+    <main class="main-grid">
+      <section class="card-section">
+        <h2>Status dos Motores</h2>
+        <div class="motores-lista" id="motores-lista"></div>
+      </section>
+
+      <aside class="card-section">
+        <h2>Plano de Manutenção Preventiva</h2>
+        <div class="plano-manutencao" id="plano-manutencao"></div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    // Constantes e dados equivalentes ao código Python
+    const SISTEMA_NOME = "Monitoramento de Motores Industriais";
+    const VERSAO = "1.0.0";
+
+    const LIMITES = {
+      temperatura_max: 80.0,
+      corrente_max: 18.5,
+      vibracao_max: 4.5,
+      rpm_min: 1400,
+      rpm_max: 1800,
+    };
+
+    const LEITURAS_MOTORES = [
+      { id: "MTR-01", setor: "Estamparia", temperatura: 68.4, corrente: 14.2, vibracao: 2.1, rpm: 1750, potencia_kw: 7.5 },
+      { id: "MTR-02", setor: "Usinagem", temperatura: 84.7, corrente: 19.3, vibracao: 5.2, rpm: 1690, potencia_kw: 11.0 },
+      { id: "MTR-03", setor: "Bobinagem", temperatura: 76.2, corrente: 17.8, vibracao: 4.7, rpm: 1520, potencia_kw: 5.5 },
+      { id: "MTR-04", setor: "Pintura", temperatura: 61.0, corrente: 11.5, vibracao: 1.8, rpm: 1780, potencia_kw: 7.5 },
+    ];
+
+    function validarLeitura(motor) {
+      const camposObrigatorios = ["id", "setor", "temperatura", "corrente", "vibracao", "rpm", "potencia_kw"];
+      for (const campo of camposObrigatorios) {
+        if (!(campo in motor) || motor[campo] === null || motor[campo] === undefined) {
+          return false;
+        }
+      }
+      if (motor.temperatura < 0 || motor.corrente < 0 || motor.vibracao < 0 || motor.rpm < 0) {
+        return false;
+      }
+      return true;
+    }
+
+    function obterLeiturasValidas(listaMotores) {
+      return listaMotores.filter(validarLeitura);
+    }
+
+    function analisarAlertas(motor) {
+      const alertas = [];
+      if (motor.temperatura > LIMITES.temperatura_max) {
+        alertas.push(`Superaquecimento (${motor.temperatura.toFixed(1)} °C)`);
+      }
+      if (motor.corrente > LIMITES.corrente_max) {
+        alertas.push(`Sobrecorrente (${motor.corrente.toFixed(1)} A)`);
+      }
+      if (motor.vibracao > LIMITES.vibracao_max) {
+        alertas.push(`Vibração elevada (${motor.vibracao.toFixed(1)} mm/s)`);
+      }
+      if (motor.rpm < LIMITES.rpm_min || motor.rpm > LIMITES.rpm_max) {
+        alertas.push(`Rotação fora da faixa (${motor.rpm} RPM)`);
+      }
+
+      let status = "NORMAL";
+      if (alertas.length === 1) status = "ATENCAO";
+      else if (alertas.length > 1) status = "CRITICO";
+
+      return { status, alertas };
+    }
+
+    function calcularEstatisticas(motores) {
+      const total = motores.length;
+      if (total === 0) return null;
+
+      const tempMedia = motores.reduce((acc, m) => acc + m.temperatura, 0) / total;
+      const correnteMedia = motores.reduce((acc, m) => acc + m.corrente, 0) / total;
+      const potenciaTotal = motores.reduce((acc, m) => acc + m.potencia_kw, 0);
+      const maiorTemp = motores.reduce((prev, curr) => (curr.temperatura > prev.temperatura ? curr : prev));
+
+      return {
+        total_motores: total,
+        temperatura_media: tempMedia.toFixed(2),
+        corrente_media: correnteMedia.toFixed(2),
+        potencia_total_kw: potenciaTotal.toFixed(2),
+        motor_mais_quente: maiorTemp.id,
+      };
+    }
+
+    function gerarPlanoManutencao(motores) {
+      const plano = { CRITICO: [], ATENCAO: [], NORMAL: [] };
+      for (const motor of motores) {
+        const { status, alertas } = analisarAlertas(motor);
+        plano[status].push({
+          id: motor.id,
+          setor: motor.setor,
+          ocorrencias: alertas.length,
+        });
+      }
+      return plano;
+    }
+
+    function renderizarPainel() {
+      const motoresValidos = obterLeiturasValidas(LEITURAS_MOTORES);
+
+      // Cabeçalho
+      document.getElementById("sistema-titulo").textContent = SISTEMA_NOME;
+      document.getElementById("sistema-versao").textContent = `v${VERSAO}`;
+      const agora = new Date();
+      document.getElementById("data-hora").textContent =
+        `Data/Hora da leitura: ${agora.toLocaleDateString("pt-BR")} ${agora.toLocaleTimeString("pt-BR")}`;
+
+      // Limites
+      document.getElementById("limites-bar").innerHTML = `
+        <span><strong>Limites Operacionais:</strong></span>
+        <span>Temp. Máx: <b>${LIMITES.temperatura_max} °C</b></span>
+        <span>Corrente Máx: <b>${LIMITES.corrente_max} A</b></span>
+        <span>Vibração Máx: <b>${LIMITES.vibracao_max} mm/s</b></span>
+        <span>Faixa RPM: <b>${LIMITES.rpm_min} – ${LIMITES.rpm_max}</b></span>
+      `;
+
+      // Estatísticas
+      const stats = calcularEstatisticas(motoresValidos);
+      if (stats) {
+        document.getElementById("stats-grid").innerHTML = `
+          <div class="stat-card">
+            <span class="stat-label">Motores Monitorados</span>
+            <strong class="stat-value">${stats.total_motores}</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Temperatura Média</span>
+            <strong class="stat-value">${stats.temperatura_media} °C</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Corrente Média</span>
+            <strong class="stat-value">${stats.corrente_media} A</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Potência Total</span>
+            <strong class="stat-value">${stats.potencia_total_kw} kW</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Motor Mais Quente</span>
+            <strong class="stat-value destaque-quente">${stats.motor_mais_quente}</strong>
+          </div>
+        `;
+      }
+
+      // Lista de Motores
+      const listaEl = document.getElementById("motores-lista");
+      listaEl.innerHTML = motoresValidos.map(motor => {
+        const { status, alertas } = analisarAlertas(motor);
+        const classeStatus = status.toLowerCase();
+        const rotuloStatus = status === "ATENCAO" ? "ATENÇÃO" : status === "CRITICO" ? "CRÍTICO" : "NORMAL";
+
+        const tempExcedida = motor.temperatura > LIMITES.temperatura_max ? "valor-alerta" : "";
+        const corrExcedida = motor.corrente > LIMITES.corrente_max ? "valor-alerta" : "";
+        const vibExcedida = motor.vibracao > LIMITES.vibracao_max ? "valor-alerta" : "";
+        const rpmExcedida = (motor.rpm < LIMITES.rpm_min || motor.rpm > LIMITES.rpm_max) ? "valor-alerta" : "";
+
+        const alertasHtml = alertas.length > 0
+          ? `<ul class="alertas-lista">${alertas.map(a => `<li>⚠ ${a}</li>`).join("")}</ul>`
+          : `<p class="sem-alertas">✓ Operando dentro dos parâmetros nominais</p>`;
+
+        return `
+          <article class="motor-card borda-${classeStatus}">
+            <div class="motor-header">
+              <div>
+                <span class="motor-id">${motor.id}</span>
+                <span class="motor-setor">${motor.setor} • ${motor.potencia_kw} kW</span>
+              </div>
+              <span class="status-badge badge-${classeStatus}">${rotuloStatus}</span>
+            </div>
+
+            <div class="metricas-grid">
+              <div class="metrica ${tempExcedida}">
+                <span>Temperatura</span>
+                <strong>${motor.temperatura.toFixed(1)} °C</strong>
+              </div>
+              <div class="metrica ${corrExcedida}">
+                <span>Corrente</span>
+                <strong>${motor.corrente.toFixed(1)} A</strong>
+              </div>
+              <div class="metrica ${vibExcedida}">
+                <span>Vibração</span>
+                <strong>${motor.vibracao.toFixed(1)} mm/s</strong>
+              </div>
+              <div class="metrica ${rpmExcedida}">
+                <span>Rotação</span>
+                <strong>${motor.rpm} RPM</strong>
+              </div>
+            </div>
+
+            ${alertasHtml}
+          </article>
+        `;
+      }).join("");
+
+      // Plano de Manutenção
+      const plano = gerarPlanoManutencao(motoresValidos);
+      const formatarListaPlano = (itens) =>
+        itens.length > 0
+          ? itens.map(m => `<span class="tag-motor">${m.id} <small>(${m.setor})</small></span>`).join("")
+          : `<span class="vazio">Nenhum motor nesta categoria</span>`;
+
+      document.getElementById("plano-manutencao").innerHTML = `
+        <div class="plano-grupo grupo-critico">
+          <h3>Parada Imediata (CRÍTICO)</h3>
+          <p class="plano-desc">Múltiplas anomalias detectadas. Risco de falha severa.</p>
+          <div class="tags-container">${formatarListaPlano(plano.CRITICO)}</div>
+        </div>
+
+        <div class="plano-grupo grupo-atencao">
+          <h3>Inspeção Programada (ATENÇÃO)</h3>
+          <p class="plano-desc">Um parâmetro fora do limite. Agendar verificação técnica.</p>
+          <div class="tags-container">${formatarListaPlano(plano.ATENCAO)}</div>
+        </div>
+
+        <div class="plano-grupo grupo-normal">
+          <h3>Operação Estável (NORMAL)</h3>
+          <p class="plano-desc">Manter rotina padrão de monitoramento.</p>
+          <div class="tags-container">${formatarListaPlano(plano.NORMAL)}</div>
+        </div>
+      `;
+    }
+
+    renderizarPainel();
+  </script>
+</body>
+</html>
